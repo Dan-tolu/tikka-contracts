@@ -1,6 +1,6 @@
 .PHONY: build check test test-doc lint fmt-check clippy orphan-check wasm-size \
         docs-errors docs-events shellcheck \
-        ruff-lint ruff-fmt-check python-tests \
+        ruff-lint ruff-fmt-check python-tests supply-chain \
         fuzz clean deploy-testnet deploy-mainnet verify reproducible \
         oracle-build oracle-test oracle-test-ci oracle-lint oracle-fmt-check oracle-typecheck \
         all ci
@@ -53,6 +53,11 @@ fuzz:
 # Deploy / utility
 # ---------------------------------------------------------------------------
 
+# Fail if anything that executes on clone, open or install has entered the
+# tree: editor auto-run tasks, npm lifecycle scripts, font-shaped binaries.
+supply-chain:
+	python3 scripts/check_supply_chain.py
+
 deploy-testnet:
 	./scripts/deploy-testnet.sh
 
@@ -89,5 +94,5 @@ all: lint test build
 # ---------------------------------------------------------------------------
 ci: check fmt-check orphan-check build wasm-size docs-errors docs-events \
     clippy test test-doc shellcheck \
-    ruff-lint ruff-fmt-check python-tests \
+    ruff-lint ruff-fmt-check python-tests supply-chain \
     oracle-fmt-check oracle-lint oracle-typecheck oracle-test-ci
